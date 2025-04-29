@@ -32,7 +32,6 @@ from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Hash import HMAC, SHA256
 
-
 # === Helper Functions ===
 
 def get_plaintext_input():
@@ -168,7 +167,13 @@ def main():
 
     save_transmitted_data(encrypted_aes_key, encrypted_message, mac, 'data/transmitted_data.json')
 
-    print("[+] Message encrypted and transmitted successfully!")
+    print("\n[+] Encryption Process Summary:")
+    print(f"[Sender] Plaintext: {plaintext}")
+    print(f"[Sender] Encrypted AES Key (base64): {base64.b64encode(encrypted_aes_key).decode()}")
+    print(f"[Sender] Encrypted Message (base64): {base64.b64encode(encrypted_message).decode()}")
+    print(f"[Sender] MAC (base64): {base64.b64encode(mac).decode()}")
+
+    print("\n[+] Message encrypted and transmitted successfully!")
 
 
 if __name__ == "__main__":

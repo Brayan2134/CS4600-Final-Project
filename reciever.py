@@ -140,7 +140,14 @@ def main():
     aes_key = decrypt_aes_key_with_rsa(encrypted_aes_key, receiver_private_key)
 
     mac_input = encrypted_aes_key + encrypted_message
+
+    print("\n[+] Decryption Process Summary:")
+    print(f"[Receiver] Encrypted AES Key (base64): {base64.b64encode(encrypted_aes_key).decode()}")
+    print(f"[Receiver] Encrypted Message (base64): {base64.b64encode(encrypted_message).decode()}")
+    print(f"[Receiver] Received MAC (base64): {base64.b64encode(received_mac).decode()}")
+
     if verify_mac(mac_input, received_mac, aes_key):
+        print("[Receiver] MAC Verified Successfully ✅")
         plaintext = decrypt_message_with_aes(encrypted_message, aes_key)
         display_plaintext(plaintext)
     else:
