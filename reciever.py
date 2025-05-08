@@ -32,6 +32,20 @@ from Crypto.Hash import HMAC, SHA256
 
 # === Helper Functions ===
 
+
+"""
+Requirement 5: The receiver should be able to successfully authenticate, decrypt the message, and read the original message.
+
+Implementation:
+                1. load_receiver_private_key(filepath) loads the receiver’s private RSA key using RSA.import_key().
+                2. read_transmitted_data(input_file) extracts the encrypted AES key, encrypted message, and MAC from the JSON file.
+                3. decrypt_aes_key_with_rsa(encrypted_aes_key, rsa_private_key) decrypts the AES key using RSA with OAEP padding.
+                4. verify_mac(data, received_mac, mac_key) checks message integrity using HMAC-SHA256.
+                5. decrypt_message_with_aes(encrypted_message, aes_key) decrypts the message using AES-CBC mode.
+                6. unpad(data, block_size=16) removes PKCS7 padding after AES decryption.
+                7. display_plaintext(plaintext) prints the original message to the screen.
+"""
+
 def load_receiver_private_key(filepath):
     """
     DESC: Load receiver's RSA private key from a file.

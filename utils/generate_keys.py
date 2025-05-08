@@ -33,6 +33,18 @@ KEY_SIZE = 2048
 KEY_DIR = "../keys"
 
 
+"""
+Requirement 1: The two parties have each other’s RSA public key.
+               Each of them holds his/her own RSA private key.
+
+Implementation:
+                1. generate_and_save_keypair(name_prefix) generates RSA key pairs for both sender and receiver.
+                2. RSA.generate(KEY_SIZE) creates a 2048-bit RSA key pair.
+                3. export_key() exports the private and public keys to PEM format.
+                4. Keys are saved to the 'keys/' directory as:
+                     - sender_private.pem / sender_public.pem
+                     - receiver_private.pem / receiver_public.pem
+"""
 def generate_and_save_keypair(name_prefix):
     """
     DESC: Generate RSA key pair and save to files.

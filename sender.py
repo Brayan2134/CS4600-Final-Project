@@ -24,7 +24,6 @@ Output folder: /data/
 Creates a file: transmitted_data.json
 """
 
-import os
 import base64
 import json
 from Crypto.Cipher import AES, PKCS1_OAEP
@@ -34,6 +33,16 @@ from Crypto.Hash import HMAC, SHA256
 
 # === Helper Functions ===
 
+
+"""
+Requirement 2: Each party’s message (from a .txt file) is encrypted using AES before sending it to another party.
+
+Implementation:
+                1. get_plaintext_input() allows the user to either load a message from a .txt file or enter it manually.
+                2. generate_aes_key(256) creates a 256-bit AES key using get_random_bytes(32).
+                3. encrypt_message_with_aes(plaintext, aes_key) encrypts the plaintext using AES in CBC mode.
+                4. pad(data, block_size=16) applies PKCS7 padding to align the message with AES block size.
+"""
 def get_plaintext_input():
     """
     DESC: Prompt user for plaintext input (file or manual typing).
@@ -52,19 +61,6 @@ def get_plaintext_input():
         print("Invalid choice. Defaulting to manual input.")
         plaintext = input("Enter your message: ")
     return plaintext
-
-
-def load_receiver_public_key(filepath):
-    """
-    DESC: Load receiver's RSA public key from a file.
-    PRE-COND: File must exist and contain a valid RSA public key.
-    POST-COND: Returns an RSA public key object.
-    NOTES: If file is missing or corrupted, will raise an exception.
-    """
-    with open(filepath, 'rb') as f:
-        public_key = RSA.import_key(f.read())
-    return public_key
-
 
 def generate_aes_key(length_bits=256):
     """
@@ -103,6 +99,27 @@ def pad(data, block_size=16):
     return data + padding
 
 
+"""
+Requirement 3: The AES key used is encrypted using the receiver’s RSA public key.
+               The encrypted AES key is sent with the encrypted message.
+
+Implementation:
+                1. load_receiver_public_key(filepath) reads and loads the receiver's RSA public key from PEM format.
+                2. encrypt_aes_key_with_rsa(aes_key, rsa_public_key) encrypts the AES key using RSA and OAEP padding.
+                3. The encrypted AES key is written to transmitted_data.json alongside the encrypted message.
+"""
+def load_receiver_public_key(filepath):
+    """
+    DESC: Load receiver's RSA public key from a file.
+    PRE-COND: File must exist and contain a valid RSA public key.
+    POST-COND: Returns an RSA public key object.
+    NOTES: If file is missing or corrupted, will raise an exception.
+    """
+    with open(filepath, 'rb') as f:
+        public_key = RSA.import_key(f.read())
+    return public_key
+
+
 def encrypt_aes_key_with_rsa(aes_key, rsa_public_key):
     """
     DESC: Encrypt AES key using RSA public key (OAEP).
@@ -115,6 +132,14 @@ def encrypt_aes_key_with_rsa(aes_key, rsa_public_key):
     return encrypted_key
 
 
+"""
+Requirement 4: Message authentication code should be appended to data transmitted.
+
+Implementation:
+                1. generate_mac(data, mac_key) uses HMAC-SHA256 to generate a MAC over (encrypted AES key + encrypted message).
+                2. save_transmitted_data(encrypted_aes_key, encrypted_message, mac, output_file)
+                   encodes all values in Base64 and saves them to transmitted_data.json.
+"""
 def generate_mac(data, mac_key):
     """
     DESC: Generate HMAC for data authentication.
